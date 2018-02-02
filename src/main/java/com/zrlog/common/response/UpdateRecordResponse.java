@@ -4,6 +4,12 @@ public class UpdateRecordResponse {
     private int error;
     private String message;
 
+    public UpdateRecordResponse() {
+    }
+
+    public UpdateRecordResponse(Boolean success) {
+        this.error = success ? 0 : 1;
+    }
     public int getError() {
         return error;
     }

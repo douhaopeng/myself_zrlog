@@ -6,6 +6,7 @@ import com.jfinal.kit.PathKit;
 import com.zrlog.common.BaseDataInitVO;
 import com.zrlog.common.Constants;
 import com.zrlog.model.*;
+import com.zrlog.web.controller.admin.api.WebSiteController;
 import com.zrlog.web.util.WebTools;
 
 import java.io.File;
@@ -13,7 +14,7 @@ import java.util.*;
 
 public class CacheService {
     private static Map<String, String> cacheFileMap = new HashMap<>();
-    public void refreshInitDataCache(BaseController baseController, boolean cleanAble) {
+    public void refreshInitDataCache(WebSiteController baseController, boolean cleanAble) {
         if (cleanAble || JFinal.me().getConstants().getDevMode()) {
             clearCache();
         }

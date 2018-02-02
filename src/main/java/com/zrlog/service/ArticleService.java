@@ -7,11 +7,17 @@ import com.hibegin.common.util.http.handle.HttpFileHandle;
 import com.jfinal.core.JFinal;
 import com.jfinal.kit.PathKit;
 import com.zrlog.common.Constants;
+import com.zrlog.common.request.PageableRequest;
+import com.zrlog.common.response.ArticleResponseEntry;
 import com.zrlog.common.response.CreateOrUpdateLogResponse;
+import com.zrlog.common.response.PageableResponse;
 import com.zrlog.model.Log;
 import com.zrlog.model.Tag;
+import com.zrlog.util.BeanUtil;
 import com.zrlog.util.ParseUtil;
 import com.zrlog.util.ThumbnailUtil;
+import com.zrlog.web.token.AdminToken;
+import com.zrlog.web.token.AdminTokenThreadLocal;
 import org.jsoup.Jsoup;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
@@ -96,11 +102,11 @@ public class ArticleService {
 
     }
 
-    private Object getPlainSearchTxt(String content) {
+    public Object getPlainSearchTxt(String content) {
         return Jsoup.parse(content).body().text();
     }
 
-    private Object getFirstImgUrl(String htmlContent, Integer userId) {
+    public String getFirstImgUrl(String htmlContent, Integer userId) {
         Elements elements = Jsoup.parse(htmlContent).select("img");
         if (!elements.isEmpty()) {
             String url = elements.first().attr("src");
@@ -206,6 +212,19 @@ public class ArticleService {
             }
         }
         return newContent;
+    }
+
+    public PageableResponse<ArticleResponseEntry> page(PageableRequest pageableRequest, String keywords) {
+        Map<String, Object> data = Log.dao.queryAll(
+                pageableRequest.getPage(), pageableRequest.getRows(), keywords, pageableRequest.getOrder(), pageableRequest.getSort());
+        wrapperSearchKeyword(data, keywords);
+        return BeanUtil.convertPageable(data, ArticleResponseEntry.class);
+    }
+
+    public Map<String, Object> searchArticle(int page, int row, String keywords) {
+        Map<String, Object> data = Log.dao.findByTitleOrPlainContentLike(page, row, keywords);
+        wrapperSearchKeyword(data, keywords);
+        return data;
     }
 
     private void wrapperSearchKeyword(Map<String, Object> data, String keywords) {
