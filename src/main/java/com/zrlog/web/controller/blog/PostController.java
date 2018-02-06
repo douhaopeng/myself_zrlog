@@ -60,4 +60,11 @@ public class PostController extends BaseController{
         pager.put("endPage", currentPage == total);
         setAttr("pager", pager);
     }
+    private Map<String, Object> pageEntity(String url, int currentPage, String desc, int page) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("url", url + page);
+        map.put("desc", desc);
+        map.put("current", currentPage == page);
+        return map;
+    }
 }
