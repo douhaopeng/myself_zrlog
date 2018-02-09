@@ -67,4 +67,23 @@ public class PostController extends BaseController{
         map.put("current", currentPage == page);
         return map;
     }
+
+    private Map<String, Object> pageEntity(String url, int currentPage, int page) {
+        return pageEntity(url, currentPage, page + "", page);
+    }
+
+    public String index() {
+        if ((getRequest().getServletPath().startsWith("/post"))
+                && (getPara(0) != null)) {
+            if (getPara(0).equals("all")) {
+                return all();
+            } else if (getPara(0) != null) {
+                return detail();
+            } else {
+                return all();
+            }
+        } else {
+            return all();
+        }
+    }
 }
