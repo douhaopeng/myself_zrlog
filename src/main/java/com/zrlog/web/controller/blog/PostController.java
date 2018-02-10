@@ -2,6 +2,7 @@ package com.zrlog.web.controller.blog;
 
 import com.zrlog.util.I18NUtil;
 import com.zrlog.web.controller.BaseController;
+import com.zrlog.web.util.WebTools;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -85,5 +86,34 @@ public class PostController extends BaseController{
         } else {
             return all();
         }
+    }
+
+    public String search() {
+        String key;
+        Map<String, Object> data;
+        if (getParaToInt(1) == null) {
+            if (isNotNullOrNotEmptyStr(getPara("key"))) {
+                if ("GET".equals(getRequest().getMethod())) {
+                    key = convertRequestParam(getPara("key"));
+                } else {
+                    key = getPara("key");
+                }
+                data = articleService.searchArticle(1, getDefaultRows(), key);
+            } else {
+                return all();
+            }
+
+        } else {
+            key = convertRequestParam(getPara(0));
+            data = articleService.searchArticle(getParaToInt(1), getDefaultRows(), key);
+        }
+        // 记录回话的Key
+        setAttr("key", WebTools.htmlEncode(key));
+
+        setAttr("tipsType", I18NUtil.getStringFromRes("search", getRequest()));
+        setAttr("tipsName",  WebTools.htmlEncode(key));
+
+        setPageInfo("post/search/" + key + "-", data, getParaToInt(1, 1));
+        return "page";
     }
 }
