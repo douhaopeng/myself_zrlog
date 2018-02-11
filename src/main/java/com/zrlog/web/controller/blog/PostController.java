@@ -1,5 +1,6 @@
 package com.zrlog.web.controller.blog;
 
+import com.zrlog.model.Log;
 import com.zrlog.util.I18NUtil;
 import com.zrlog.web.controller.BaseController;
 import com.zrlog.web.util.WebTools;
@@ -114,6 +115,14 @@ public class PostController extends BaseController{
         setAttr("tipsName",  WebTools.htmlEncode(key));
 
         setPageInfo("post/search/" + key + "-", data, getParaToInt(1, 1));
+        return "page";
+    }
+
+    public String record() {
+        setAttr("tipsType", I18NUtil.getStringFromRes("archive", getRequest()));
+        setAttr("tipsName", getPara(0));
+
+        setPageInfo("post/record/" + getPara(0) + "-", Log.dao.getLogsByData(getParaToInt(1, 1), getDefaultRows(), getPara(0)), getParaToInt(1, 1));
         return "page";
     }
 }
