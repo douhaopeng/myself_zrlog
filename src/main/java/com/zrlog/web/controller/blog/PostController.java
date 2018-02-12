@@ -1,14 +1,17 @@
 package com.zrlog.web.controller.blog;
 
+import com.zrlog.model.Comment;
 import com.zrlog.model.Log;
+import com.zrlog.service.CacheService;
 import com.zrlog.util.I18NUtil;
 import com.zrlog.web.controller.BaseController;
 import com.zrlog.web.util.WebTools;
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Whitelist;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.*;
 
 public class PostController extends BaseController{
     private void setPageInfo(String currentUri, Map<String, Object> data, int currentPage){
@@ -124,5 +127,38 @@ public class PostController extends BaseController{
 
         setPageInfo("post/record/" + getPara(0) + "-", Log.dao.getLogsByData(getParaToInt(1, 1), getDefaultRows(), getPara(0)), getParaToInt(1, 1));
         return "page";
+    }
+
+    public void addComment() throws UnsupportedEncodingException {
+        Integer logId = getParaToInt("logId");
+        if (logId != null && getPara("userComment") != null) {
+            Log log = Log.dao.getLogById(logId);
+            if (log != null && log.getBoolean("canComment")) {
+                String comment = Jsoup.clean(getPara("userComment"), Whitelist.basic());
+                if (comment.length() > 0) {
+                    // TODO　如何过滤垃圾信息
+                    new Comment().set("userHome", getPara("userHome"))
+                            .set("userMail", getPara("userMail"))
+                            .set("userIp", WebTools.getRealIp(getRequest()))
+                            .set("userName", getPara("userName"))
+                            .set("logId", logId)
+                            .set("userComment", comment)
+                            .set("commTime", new Date()).set("hide", 1).save();
+                }
+                String alias = URLEncoder.encode(log.getStr("alias"), "UTF-8");
+                String ext = "";
+                if (getStaticHtmlStatus()) {
+                    ext = ".html";
+                    new CacheService().clearStaticPostFileByLogId(logId + "");
+                }
+                if (getRequest().getContextPath().isEmpty()) {
+                    redirect("/post/" + alias + ext);
+                } else {
+                    redirect(getRequest().getContextPath() + "post/" + alias + ext);
+                }
+            } else {
+                renderError(404);
+            }
+        }
     }
 }
