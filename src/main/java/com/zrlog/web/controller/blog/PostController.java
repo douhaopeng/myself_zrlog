@@ -166,4 +166,16 @@ public class PostController extends BaseController{
         return detail(convertRequestParam(getPara()));
     }
 
+    private String detail(Object id) {
+        Log log = Log.dao.getLogById(id);
+        if (log != null) {
+            Integer logId = log.get("logId");
+            Log.dao.clickChange(logId);
+            log.put("lastLog", Log.dao.getLastLog(logId, I18NUtil.getStringFromRes("noLastLog", getRequest())));
+            log.put("nextLog", Log.dao.getNextLog(logId, I18NUtil.getStringFromRes("noNextLog", getRequest())));
+            log.put("comments", Comment.dao.getCommentsByLogId(logId));
+            setAttr("log", log);
+        }
+        return "detail";
+    }
 }
