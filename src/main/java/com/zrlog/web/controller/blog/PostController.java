@@ -161,4 +161,9 @@ public class PostController extends BaseController{
             }
         }
     }
+
+    public String detail() {
+        return detail(convertRequestParam(getPara()));
+    }
+
 }
