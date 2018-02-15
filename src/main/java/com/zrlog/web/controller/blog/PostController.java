@@ -2,6 +2,7 @@ package com.zrlog.web.controller.blog;
 
 import com.zrlog.model.Comment;
 import com.zrlog.model.Log;
+import com.zrlog.model.Type;
 import com.zrlog.service.CacheService;
 import com.zrlog.util.I18NUtil;
 import com.zrlog.web.controller.BaseController;
@@ -177,5 +178,18 @@ public class PostController extends BaseController{
             setAttr("log", log);
         }
         return "detail";
+    }
+
+    public String sort() {
+        String typeStr = convertRequestParam(getPara(0));
+        setPageInfo("post/sort/" + typeStr + "-", Log.dao.getLogsBySort(getParaToInt(1, 1), getDefaultRows(), typeStr), getParaToInt(1, 1));
+
+        Type type = Type.dao.findByAlias(typeStr);
+        setAttr("type", type);
+        setAttr("tipsType", I18NUtil.getStringFromRes("category", getRequest()));
+        if (type != null) {
+            setAttr("tipsName", type.getStr("typeName"));
+        }
+        return "page";
     }
 }
