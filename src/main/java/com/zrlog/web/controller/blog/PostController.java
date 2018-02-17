@@ -192,4 +192,15 @@ public class PostController extends BaseController{
         }
         return "page";
     }
+
+    public String tag() {
+        if (getPara(0) != null) {
+            String tag = convertRequestParam(getPara(0));
+            setPageInfo("post/tag/" + getPara(0) + "-", Log.dao.getLogsByTag(getParaToInt(1, 1), getDefaultRows(), tag), getParaToInt(1, 1));
+
+            setAttr("tipsType", I18NUtil.getStringFromRes("tag", getRequest()));
+            setAttr("tipsName", tag);
+        }
+        return "page";
+    }
 }
