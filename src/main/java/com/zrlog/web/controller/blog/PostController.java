@@ -5,6 +5,7 @@ import com.zrlog.model.Log;
 import com.zrlog.model.Type;
 import com.zrlog.service.CacheService;
 import com.zrlog.util.I18NUtil;
+import com.zrlog.util.ParseUtil;
 import com.zrlog.web.controller.BaseController;
 import com.zrlog.web.util.WebTools;
 import org.jsoup.Jsoup;
@@ -205,5 +206,11 @@ public class PostController extends BaseController{
     }
     public String tags() {
         return "tags";
+    }
+    public String all() {
+        int page = ParseUtil.strToInt(getPara(1), 1);
+        Map<String, Object> data = Log.dao.getLogsByPage(page, getDefaultRows());
+        setPageInfo("post/all-", data, page);
+        return "index";
     }
 }
