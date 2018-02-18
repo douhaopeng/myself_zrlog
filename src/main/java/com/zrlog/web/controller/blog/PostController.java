@@ -203,4 +203,7 @@ public class PostController extends BaseController{
         }
         return "page";
     }
+    public String tags() {
+        return "tags";
+    }
 }
