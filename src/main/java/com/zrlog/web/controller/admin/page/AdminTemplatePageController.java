@@ -121,5 +121,19 @@ public class AdminTemplatePageController extends BaseController {
         }
     }
 
+    public void preview() {
+        String template = getPara("template");
+        if (template != null) {
+            Cookie cookie = new Cookie("template", template);
+            cookie.setPath("/");
+            getResponse().addCookie(cookie);
+            String path = getRequest().getContextPath();
+            String basePath = getRequest().getScheme() + "://" + getRequest().getHeader("host") + path + "/";
+            redirect(basePath);
+        } else {
+            setAttr("message", I18NUtil.getStringFromRes("templatePathNotNull", getRequest()));
+        }
+    }
+
 
 }
