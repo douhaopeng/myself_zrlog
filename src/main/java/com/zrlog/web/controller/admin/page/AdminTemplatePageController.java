@@ -105,5 +105,21 @@ public class AdminTemplatePageController extends BaseController {
         return "/admin/template";
     }
 
+    public String config() {
+        String templateName = getPara("template");
+        File file = new File(PathKit.getWebRootPath() + templateName + "/setting/index.jsp");
+        if (file.exists()) {
+            setAttr("include", templateName + "/setting/index");
+            setAttr("template", templateName);
+            setAttr("menu", "1");
+            I18NUtil.addToRequest(PathKit.getWebRootPath() + templateName + "/language/", this);
+            String jsonStr = new WebSite().getValueByName(templateName + templateConfigSuffix);
+            fullTemplateSetting(jsonStr);
+            return "/admin/blank";
+        } else {
+            return Constants.ADMIN_NOT_FOUND_PAGE;
+        }
+    }
+
 
 }
